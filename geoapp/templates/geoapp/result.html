@@ -1,0 +1,66 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Form Result</title>
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  />
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+  ></script>
+  <style>
+    .result-container {
+      max-width: 600px;
+      margin: 20px auto 40px;
+      background-color: #1e1e1e;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.7);
+    }
+  
+    pre {
+      background-color: #2a2a2a;
+      color: #e0e0e0;
+      padding: 15px;
+      border-radius: 4px;
+      overflow-x: auto;
+      font-size: 14px;
+    }
+  
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    #map {
+      width: 100%;
+      height: 400px;
+      margin: 20px 0;
+      border: 1px solid #333;
+      border-radius: 4px;
+      box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+    }
+  </style>
+</head>
+<body>
+  <h1>Result JSON</h1>
+  <pre>{{ json_text|safe }}</pre> 
+  
+  <div id="map"></div>
+  <script>
+    var map = L.map('map').setView([51.505, -0.09], 13);
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+    {% if area_json and area_json != 'null' %}
+      var areaCoords = {{ area_json|safe }};
+      L.rectangle(areaCoords, {color: 'red', weight: 1}).addTo(map);
+      map.fitBounds(areaCoords);
+    {% else %}
+      map.setView([51.505, -0.09], 3);
+    {% endif %}
+  </script>
+</body>
+</html>

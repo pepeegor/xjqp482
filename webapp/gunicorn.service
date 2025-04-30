@@ -1,0 +1,13 @@
+[Unit]
+Description=Gunicorn Django Service
+After=network.target
+
+[Service]
+User=<YOUR_USER>
+Group=www-data
+WorkingDirectory=/home/<YOUR_USER>/geoapp
+Environment="PATH=/home/<YOUR_USER>/geoapp/venv/bin"
+ExecStart=/home/<YOUR_USER>/geoapp/venv/bin/gunicorn webapp.wsgi:application --bind 127.0.0.1:8000 --workers 3
+
+[Install]
+WantedBy=multi-user.target

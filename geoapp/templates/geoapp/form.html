@@ -1,0 +1,102 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Geo-Form</title>
+
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  />
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
+  </script>
+
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css"
+  />
+  <script
+    src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js">
+  </script>
+
+  <link
+    rel="stylesheet"
+    href="{% static 'geoapp/css/style.css' %}"
+  />
+</head>
+<body>
+  <h1>Geo-Form</h1>
+
+  <form method="post">
+    {% csrf_token %}
+    <div id="fields">
+      <input type="text" name="name" placeholder="Введите значение" />
+    </div>
+    <button type="button" id="addField">Добавить поле</button>
+
+    <input type="hidden" name="area" id="coordsField" />
+
+    <div id="map"></div>
+    <button type="submit">Отправить</button>
+  </form>
+
+
+  <script>
+    let counter = 0;
+    $('#addField').on('click', function() {
+      counter++;
+      $('#fields').append(
+        `<input type="text" name="name${counter}" placeholder="Доп. значение ${counter}" />`
+      );
+    });
+
+    const map = L.map('map').setView([51.505, -0.09], 13);
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution:
+        '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    const drawnItems = new L.FeatureGroup();
+    map.addLayer(drawnItems);
+
+    const drawControl = new L.Control.Draw({
+      draw: {
+        polygon: false,
+        polyline: false,
+        circle: false,
+        marker: false,
+        circlemarker: false,
+        rectangle: {
+          shapeOptions: {
+            color: 'blue',
+            weight: 2
+          }
+        }
+      },
+      edit: { featureGroup: drawnItems, edit: false, remove: false }
+    });
+    map.addControl(drawControl);
+
+    map.on(L.Draw.Event.CREATED, function(e) {
+      drawnItems.clearLayers();
+
+      const layer = e.layer;
+      drawnItems.addLayer(layer);
+
+      const bounds = layer.getBounds();
+      const sw = bounds.getSouthWest();
+      const ne = bounds.getNorthEast();
+
+      const coords = [
+        [sw.lat, sw.lng],
+        [ne.lat, ne.lng]
+      ];
+      $('#coordsField').val(JSON.stringify(coords));
+    });
+  </script>
+</body>
+</html>
