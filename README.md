@@ -1,4 +1,4 @@
-# Развёртывание Django-гео-приложения на Ubuntu 20.04+ (Nginx + Gunicorn)
+# Развёртывание Django-приложения на Ubuntu 20.04+ (Nginx + Gunicorn)
 
 ## 1. Предварительные требования
 
@@ -20,9 +20,9 @@ sudo apt install -y git python3.11 python3.11-venv python3.11-distutils postgres
 ## 2. Настройка PostgreSQL
 
 1. Переключитесь на пользователя postgres:
-
-> sudo -u postgres psql
-
+```
+sudo -u postgres psql
+```
 2. Создайте базу и роль (замените имя пользователя и пароль):
    ```
    CREATE DATABASE geoapp;
@@ -73,7 +73,7 @@ sudo apt install -y git python3.11 python3.11-venv python3.11-distutils postgres
    python manage.py collectstatic --noinput
    ```
 
-## 6. Настройка Gunicorn (systemd)
+## 6. Настройка Gunicorn сервиса
 
 1. Скопируйте файл gunicorn.service в `/etc/systemd/system/gunicorn.service` и поменяйте следующие данные:
 
